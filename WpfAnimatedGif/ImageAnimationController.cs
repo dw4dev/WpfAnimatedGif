@@ -15,7 +15,7 @@ namespace WpfAnimatedGif
 
         static ImageAnimationController()
         {
-            _sourceDescriptor = DependencyPropertyDescriptor.FromProperty(Image.SourceProperty, typeof (Image));
+            _sourceDescriptor = DependencyPropertyDescriptor.FromProperty(Image.SourceProperty, typeof(Image));
         }
 
         private readonly Image _image;
@@ -28,18 +28,25 @@ namespace WpfAnimatedGif
             _image = image;
             _animation = animation;
             _animation.Completed += AnimationCompleted;
+            /*
+                從動畫關鍵影格物件 產生動畫時鐘
+            */
             _clock = _animation.CreateClock();
             _clockController = _clock.Controller;
             _sourceDescriptor.AddValueChanged(image, ImageSourceChanged);
 
+            // 一開始先暫停
             // ReSharper disable once PossibleNullReferenceException
             _clockController.Pause();
 
+            /*
+                將動畫時鐘與依賴屬性關聯起來。
+            */
             _image.ApplyAnimationClock(Image.SourceProperty, _clock);
 
             IsPaused = !autoStart;
             if (autoStart)
-                _clockController.Resume();
+                _clockController.Resume();      //開始播放動畫
         }
 
         void AnimationCompleted(object sender, EventArgs e)
